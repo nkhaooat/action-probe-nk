@@ -148,8 +148,9 @@ inline LoweredProgram LowerToMaxwellWith(std::span<const Instruction> code, u32 
             // R253, so it holds the guest predicate (Pokemon Pokopia's photo compute shaders).
             const bool guarded_add = (opcode == 0x890 || (opcode == 0x290 && !(insn.words[1] & ~0xffU))) &&
                                      !insn.Bits(72, 5) && insn.Bits(77, 7) == 0x7f && insn.Bits(84, 7) == 0x7f;
-            if (insn.Bits(12, 4) != 7 && opcode != 0x292 && opcode != 0x892 && !guarded_add)
-                return fail(index, "native uniform arithmetic predication");
+            const bool guarded_lea = (opcode == 0x291 || opcode == 0x891) && !insn.Bits(80, 1) &&
+                                     insn.Bits(81, 3) == 7;
+            if (insn.Bits(12, 4) != 7 && opcode != 0x292 && opcode != 0x892 && !guarded_add && !guarded_lea)                return fail(index, "native uniform arithmetic predication");
             uniform_guard = insn.Bits(12, 4) != 7;
             rewritten_uniform = true;
             const u32 dst = uniform_register(insn.Bits(16, 8));
