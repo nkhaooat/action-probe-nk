@@ -17,8 +17,7 @@ on:
     paths:
       - VERSION
       - CHANGELOG.md
-  schedule:
-    - cron: "0 3 * * *"
+  # schedule: stripped in fork copy — staging repo has no nx2 branch
   workflow_dispatch:
     inputs:
       kind:
@@ -158,9 +157,8 @@ jobs:
   macos:
     name: macOS
     needs: prepare
-    if: >-
-      needs.prepare.outputs.skip != 'true' &&
-      (inputs.platforms == '' || inputs.platforms == 'all' || inputs.platforms == 'macos')
+    # Fork build: linux-x86_64 + windows-x86_64 only, to save runner time.
+    if: false
     uses: ./.github/workflows/build-macos.yml
     with:
       sha: ${{ needs.prepare.outputs.sha }}
